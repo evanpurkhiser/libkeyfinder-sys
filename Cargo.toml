@@ -1,0 +1,14 @@
+[package]
+name = "libkeyfinder-sys"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.71.1"
+cc = "1.2.16"
+pkg-config = "0.3.32"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
