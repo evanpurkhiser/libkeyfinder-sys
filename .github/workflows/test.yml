@@ -33,6 +33,7 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTING=OFF -S . -B build
         cmake --build build
         sudo cmake --install build
+        sudo ldconfig
 
     - name: Install libkeyfinder (macOS)
       if: matrix.os == 'macos-latest'
