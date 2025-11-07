@@ -47,7 +47,8 @@
 //! let mut audio = AudioData::new();
 //! audio.set_frame_rate(48000);
 //! audio.set_channels(1);
-//! audio.extend(samples.iter().copied());
+//! let more_samples = vec![0.4, 0.5, 0.6];
+//! audio.extend(more_samples.iter().copied());
 //! ```
 //!
 //! # Audio preprocessing
@@ -357,5 +358,133 @@ impl FromIterator<f32> for AudioData {
         let mut audio = AudioData::new();
         audio.extend(iter);
         audio
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_audio_data_new() {
+        let audio = AudioData::new();
+        assert_eq!(audio.sample_count(), 0);
+    }
+
+    #[test]
+    fn test_audio_data_set_and_get_properties() {
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(2);
+
+        assert_eq!(audio.frame_rate(), 44100);
+        assert_eq!(audio.channels(), 2);
+    }
+
+    #[test]
+    fn test_audio_data_extend() {
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(2);
+
+        let samples = vec![0.1, -0.2, 0.3, -0.4];
+        audio.extend(samples);
+
+        assert_eq!(audio.sample_count(), 4);
+        assert_eq!(audio.frame_count(), 2);
+    }
+
+    #[test]
+    fn test_audio_data_from_iterator() {
+        let samples = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
+        let mut audio: AudioData = samples.into_iter().collect();
+        audio.set_frame_rate(48000);
+        audio.set_channels(1);
+
+        assert_eq!(audio.sample_count(), 6);
+        assert_eq!(audio.frame_count(), 6);
+        assert_eq!(audio.channels(), 1);
+    }
+
+    #[test]
+    fn test_audio_data_reduce_to_mono() {
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(2);
+
+        // Stereo: left, right, left, right
+        audio.extend(vec![0.5, -0.5, 0.3, -0.3]);
+
+        audio.reduce_to_mono();
+
+        assert_eq!(audio.channels(), 1);
+        assert_eq!(audio.frame_count(), 2);
+    }
+
+    #[test]
+    fn test_audio_data_downsample() {
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(1);
+
+        audio.extend(vec![0.1, 0.2, 0.3, 0.4]);
+
+        audio.downsample(2);
+
+        assert_eq!(audio.frame_rate(), 22050);
+    }
+
+    #[test]
+    fn test_keyfinder_new() {
+        let _kf = KeyFinder::new();
+    }
+
+    #[test]
+    fn test_keyfinder_silence() {
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(1);
+
+        // One second of silence
+        audio.extend(vec![0.0; 44100]);
+
+        let mut kf = KeyFinder::new();
+        let key = kf.key_of_audio(&audio);
+
+        assert_eq!(key, KeyFinderKey::Silence);
+    }
+
+    #[test]
+    fn test_keyfinder_key_enum_values() {
+        // Test that all key enum values are distinct
+        assert_eq!(KeyFinderKey::AMajor as u32, 0);
+        assert_eq!(KeyFinderKey::AMinor as u32, 1);
+        assert_eq!(KeyFinderKey::Silence as u32, 24);
+    }
+
+    #[test]
+    fn test_keyfinder_key_from_u32() {
+        assert_eq!(KeyFinderKey::from_u32(0), KeyFinderKey::AMajor);
+        assert_eq!(KeyFinderKey::from_u32(1), KeyFinderKey::AMinor);
+        assert_eq!(KeyFinderKey::from_u32(24), KeyFinderKey::Silence);
+        assert_eq!(KeyFinderKey::from_u32(999), KeyFinderKey::Silence);
+    }
+
+    #[test]
+    fn test_audio_data_default() {
+        let audio = AudioData::default();
+        assert_eq!(audio.sample_count(), 0);
+    }
+
+    #[test]
+    fn test_keyfinder_default() {
+        let mut kf = KeyFinder::default();
+        let mut audio = AudioData::new();
+        audio.set_frame_rate(44100);
+        audio.set_channels(1);
+        audio.extend(vec![0.0; 1000]);
+
+        let key = kf.key_of_audio(&audio);
+        assert_eq!(key, KeyFinderKey::Silence);
     }
 }
