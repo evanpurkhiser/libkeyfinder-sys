@@ -2,6 +2,13 @@
 name = "libkeyfinder-sys"
 version = "0.1.0"
 edition = "2024"
+authors = ["Evan Purkhiser <evanpurkhiser@gmail.com>"]
+description = "Rust bindings to libkeyfinder - musical key detection for audio"
+repository = "https://github.com/evanpurkhiser/libkeyfinder-sys"
+license = "GPL-3.0-or-later"
+keywords = ["audio", "music", "key-detection", "keyfinder"]
+categories = ["multimedia::audio", "api-bindings"]
+readme = "README.md"
 
 [dependencies]
 cxx = "1.0"
