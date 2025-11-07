@@ -9,6 +9,7 @@ license = "GPL-3.0-or-later"
 keywords = ["audio", "music", "key-detection", "keyfinder"]
 categories = ["multimedia::audio", "api-bindings"]
 readme = "README.md"
+links = "keyfinder"
 
 [dependencies]
 cxx = "1.0"

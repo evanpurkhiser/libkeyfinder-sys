@@ -1,4 +1,12 @@
 fn main() {
+    // Skip actual build on docs.rs - just generate the bridge code
+    if std::env::var("DOCS_RS").is_ok() {
+        // Generate the cxx bridge for documentation
+        let _ = cxx_build::bridge("src/lib.rs");
+        println!("cargo:warning=Building for docs.rs - skipping libkeyfinder linkage");
+        return;
+    }
+
     // Locate the system-installed libkeyfinder using pkg-config
     let lib = pkg_config::Config::new()
         .atleast_version("2.2")
