@@ -27,7 +27,12 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libkeyfinder-dev
+        sudo apt-get install -y cmake libfftw3-dev
+        git clone https://github.com/mixxxdj/libkeyfinder.git
+        cd libkeyfinder
+        cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_TESTING=OFF -S . -B build
+        cmake --build build
+        sudo cmake --install build
 
     - name: Install libkeyfinder (macOS)
       if: matrix.os == 'macos-latest'
