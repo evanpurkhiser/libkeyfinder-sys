@@ -28,15 +28,20 @@ std::unique_ptr<KeyFinderWrapper> new_keyfinder();
 std::unique_ptr<AudioDataWrapper> new_audiodata();
 
 // KeyFinder methods
-KeyFinderKey key_of_audio(KeyFinderWrapper& kf, const AudioDataWrapper& audio);
+uint32_t key_of_audio(KeyFinderWrapper& kf, const AudioDataWrapper& audio);
 
 // AudioData methods
 void set_frame_rate(AudioDataWrapper& audio, uint32_t frame_rate);
 void set_channels(AudioDataWrapper& audio, uint32_t channels);
+uint32_t get_channels(const AudioDataWrapper& audio);
+uint32_t get_frame_rate(const AudioDataWrapper& audio);
 uint32_t get_sample_count(const AudioDataWrapper& audio);
+uint32_t get_frame_count(const AudioDataWrapper& audio);
 void add_to_sample_count(AudioDataWrapper& audio, uint32_t samples);
 void reset_iterators(AudioDataWrapper& audio);
-void advance_write_iterator(AudioDataWrapper& audio);
+void advance_write_iterator(AudioDataWrapper& audio, uint32_t by);
 void set_sample_at_write_iterator(AudioDataWrapper& audio, float sample);
+void reduce_to_mono(AudioDataWrapper& audio);
+void downsample(AudioDataWrapper& audio, uint32_t factor);
 
 } // namespace keyfinder_bridge
